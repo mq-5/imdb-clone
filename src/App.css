@@ -13,30 +13,6 @@
   background-color: #16191fd8 !important;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .pagination {
   margin: 20px;
   display: flex;
@@ -55,4 +31,22 @@ footer {
 h1 {
   text-transform: capitalize;
   margin: 30px;
+}
+
+select.form-control {
+  width: 70%;
+  margin: auto;
+}
+
+.input-range {
+  width: 70% !important;
+  margin: 30px auto;
+}
+.input-range__label-container {
+  color: #29303fd8;
+}
+.filter {
+  color: #29303fd8;
+  background-color: rgba(115, 123, 131, 0.37);
+  text-align: center;
 }

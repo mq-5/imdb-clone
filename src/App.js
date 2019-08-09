@@ -2,9 +2,10 @@ import React from "react";
 import "./App.css";
 import {
   Button,
-  Card,
+  Row,
+  Col,
+  Container,
   Spinner,
-  Accordion,
   Nav,
   NavDropdown,
   Navbar,
@@ -12,6 +13,11 @@ import {
   Form,
   FormControl
 } from "react-bootstrap";
+import MovieCards from "./MovieCards";
+import Genres from "./Genres";
+import InputRange from "react-input-range";
+import "react-input-range/lib/css/index.css";
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -19,72 +25,41 @@ class App extends React.Component {
       movies: [],
       page: 1,
       filtered: [],
-      source: "top_rated"
+      sortBy: "popularity.desc",
+      year: { min: 1850, max: 2020 },
+      rating: { min: 0, max: 10 },
+      genre: null,
+      isLoading: true
     };
   }
-
   getMovies = async page => {
-    let source = this.state.source;
+    let sortBy = this.state.sortBy;
+    let genre = this.state.genre || "";
     const response = await fetch(
-      `https://api.themoviedb.org/3/movie/${source}?api_key=4c5b4a5e627748117d4b24082672a9b4&page=${page}`
+      `https://api.themoviedb.org/3/discover/movie?api_key=4c5b4a5e627748117d4b24082672a9b4&sort_by=${sortBy}&page=${
+        this.state.page
+      }&primary_release_date.gte=${
+        this.state.year.min
+      }-1-1&primary_release_date.lte=${
+        this.state.year.max
+      }-12-31&vote_average.gte=${this.state.rating.min}&vote_average.lte=${
+        this.state.rating.max
+      }&with_genres=${genre}`
     );
     const jsonData = await response.json();
-    console.log("JSON", jsonData);
+    console.log("api", genre, jsonData);
     this.setState({
       movies: jsonData.results,
       total_pages: jsonData.total_pages,
-      page: page
+      page: page,
+      isLoading: false
     });
-    this.filterMovies("");
   };
 
   componentDidMount() {
     this.getMovies(1);
   }
 
-  renderMovieCards() {
-    return this.state.filtered.map(movie => {
-      return (
-        <Card style={{ width: "18rem", margin: 10 }}>
-          <Card.Img
-            variant="top"
-            src={`https://image.tmdb.org/t/p/w500${movie.backdrop_path}`}
-          />
-          <Card.Body
-            style={{
-              minHeight: "5rem",
-              overflow: "auto",
-              padding: 7
-            }}
-          >
-            <Card.Title>
-              <a href="#">
-                {movie.title} ({movie.release_date.slice(0, 4)})
-              </a>
-            </Card.Title>
-            <small className="font-italic">
-              Rating: {movie.vote_average}⭐ ({movie.vote_count} votes) <br />
-              Popularity: {movie.popularity}
-            </small>
-            <Accordion>
-              <Accordion.Toggle as={Button} variant="link" eventKey="0">
-                Overview
-              </Accordion.Toggle>
-              <Accordion.Collapse eventKey="0">
-                <Card.Body>
-                  <Card.Text className="text-left">{movie.overview}</Card.Text>
-                </Card.Body>
-              </Accordion.Collapse>
-            </Accordion>
-          </Card.Body>
-          <Card.Body className="py-2">
-            <Button className="m-2"> Watch</Button>
-            <Button className="m-2 btn-secondary"> Trailer</Button>
-          </Card.Body>
-        </Card>
-      );
-    });
-  }
   renderPagination() {
     let pages = [];
     for (let i = 1; i <= this.state.total_pages; i++) {
@@ -104,20 +79,17 @@ class App extends React.Component {
     });
   }
 
-  filterMovies = term => {
-    let filtered = this.state.movies.filter(movie =>
-      movie.title.toLowerCase().includes(term.toLowerCase())
+  searchMovies = term => {
+    let filtered = this.state.movies.filter(
+      movie =>
+        movie.title.toLowerCase().includes(term.toLowerCase()) ||
+        movie.overview.toLowerCase().includes(term.toLowerCase())
     );
     this.setState({ filtered: filtered });
   };
 
-  selectSource(selection) {
-    this.setState({ source: selection });
-    this.forceUpdate();
-    this.getMovies(1);
-  }
-
   render() {
+    console.log("state", this.state);
     if (this.state.isLoading) {
       return (
         <div className="App-header">
@@ -138,34 +110,46 @@ class App extends React.Component {
             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
             <Navbar.Collapse id="responsive-navbar-nav">
               <Nav className="mr-auto">
-                <NavDropdown
-                  title="Select Collection"
-                  id="collasible-nav-dropdown"
-                >
-                  <NavDropdown.Item
-                    href="#action/3.1"
-                    onClick={() => this.selectSource("top_rated")}
-                  >
-                    Top Rated
-                  </NavDropdown.Item>
+                <NavDropdown title="Sort By" id="collasible-nav-dropdown">
                   <NavDropdown.Item
                     href="#action/3.2"
-                    onClick={() => this.selectSource("now_playing")}
+                    onClick={() =>
+                      this.setState({ sortBy: "popularity.desc" }, () =>
+                        this.getMovies(this.state.page)
+                      )
+                    }
                   >
-                    Now Playing
+                    Popularity (Descending)
+                  </NavDropdown.Item>
+                  <NavDropdown.Item
+                    href="#action/3.1"
+                    onClick={() =>
+                      this.setState({ sortBy: "popularity.asc" }, () =>
+                        this.getMovies(this.state.page)
+                      )
+                    }
+                  >
+                    Popularity (Ascending)
+                  </NavDropdown.Item>
+                  <NavDropdown.Item
+                    href="#action/3.4"
+                    onClick={() =>
+                      this.setState({ sortBy: "vote_average.desc" }, () =>
+                        this.getMovies(this.state.page)
+                      )
+                    }
+                  >
+                    Rating (Descending)
                   </NavDropdown.Item>
                   <NavDropdown.Item
                     href="#action/3.3"
-                    onClick={() => this.selectSource("popular")}
+                    onClick={() =>
+                      this.setState({ sortBy: "vote_average.asc" }, () =>
+                        this.getMovies(this.state.page)
+                      )
+                    }
                   >
-                    Popular
-                  </NavDropdown.Item>
-                  <NavDropdown.Divider />
-                  <NavDropdown.Item
-                    href="#action/3.4"
-                    onClick={() => this.selectSource("upcoming")}
-                  >
-                    Upcoming
+                    Rating (Ascending)
                   </NavDropdown.Item>
                 </NavDropdown>
               </Nav>
@@ -173,20 +157,59 @@ class App extends React.Component {
                 <Form inline>
                   <FormControl
                     type="text"
-                    onLoad={e => this.filterMovies(" ")}
-                    onChange={e => this.filterMovies(e.target.value)}
+                    onChange={e => this.searchMovies(e.target.value)}
                     placeholder="Search"
                     className="mr-sm-2"
                   />
-                  <Button variant="outline-success">Search</Button>
+                  <Button disable variant="outline-success">
+                    Search
+                  </Button>
                 </Form>
               </Nav>
             </Navbar.Collapse>
           </Navbar>
-          <h1>{this.state.source.split("_").join(" ")}</h1>
-          <div className="d-flex flex-wrap justify-content-center">
-            {this.renderMovieCards()}
-          </div>
+          <Row>
+            <Col lg={3} md={12} className="filter">
+              <h3 className="my-4">Filter</h3>
+              <h5 className="mt-3"> Genres </h5>
+              <Form.Control
+                as="select"
+                onChange={e =>
+                  this.setState({ genre: e.target.value }, () =>
+                    this.getMovies(1)
+                  )
+                }
+              >
+                <option value="">All...</option>
+                <Genres />
+              </Form.Control>
+              <h5 className="mt-3"> Year </h5>
+              <InputRange
+                maxValue={2020}
+                minValue={1850}
+                value={this.state.year}
+                onChange={year =>
+                  this.setState({ year }, () => this.getMovies(this.state.page))
+                }
+              />
+              <h5 className="mt-3"> Rating </h5>
+              <InputRange
+                maxValue={10}
+                minValue={0}
+                value={this.state.rating}
+                onChange={rating =>
+                  this.setState({ rating }, () =>
+                    this.getMovies(this.state.page)
+                  )
+                }
+              />
+            </Col>
+            <Col lg={9} md={12}>
+              <Container className="d-flex flex-wrap justify-content-center">
+                <MovieCards filtered={this.state.filtered} />
+              </Container>
+            </Col>
+          </Row>
           <Pagination>
             <Pagination.First onClick={() => this.getMovies(1)} />
             <Pagination.Prev
