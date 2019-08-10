@@ -35,12 +35,11 @@ h1 {
 
 select.form-control {
   width: 70%;
-  margin: auto;
 }
 
 .input-range {
   width: 70% !important;
-  margin: 30px auto;
+  margin: 2rem 0;
 }
 .input-range__label-container {
   color: #29303fd8;
@@ -48,5 +47,6 @@ select.form-control {
 .filter {
   color: #29303fd8;
   background-color: rgba(115, 123, 131, 0.37);
-  text-align: center;
+  text-align: left;
+  padding-left: 50px;
 }

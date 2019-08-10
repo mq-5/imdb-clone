@@ -48,12 +48,15 @@ class App extends React.Component {
     );
     const jsonData = await response.json();
     console.log("api", genre, jsonData);
-    this.setState({
-      movies: jsonData.results,
-      total_pages: jsonData.total_pages,
-      page: page,
-      isLoading: false
-    });
+    this.setState(
+      {
+        movies: jsonData.results,
+        total_pages: jsonData.total_pages,
+        page: page,
+        isLoading: false
+      },
+      () => this.searchMovies("")
+    );
   };
 
   componentDidMount() {
@@ -99,13 +102,7 @@ class App extends React.Component {
     } else {
       return (
         <div className="App">
-          <Navbar
-            collapseOnSelect
-            sticky="top"
-            expand="lg"
-            bg="dark"
-            variant="dark"
-          >
+          <Navbar collapseOnSelect sticky="top" expand="lg" variant="dark">
             <Navbar.Brand href="#home">Home Cinema</Navbar.Brand>
             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
             <Navbar.Collapse id="responsive-navbar-nav">
