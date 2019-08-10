@@ -1,5 +1,5 @@
 import React from "react";
-import { CardTitle, Row, Col } from "reactstrap";
+import { Row, Col } from "reactstrap";
 // plugin that creates slider
 import Slider from "D:/Learning/CoderSchool/imdb-clone/node_modules/nouislider";
 
@@ -25,7 +25,7 @@ class Example extends React.Component {
       <Row>
         <Col xs={12} md={12}>
           <h4 className="title">{this.props.name}</h4>
-          <p className="small">
+          <p className="small font-italic">
             From{" "}
             {this.state.slider &&
               this.state.slider

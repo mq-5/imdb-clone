@@ -23,7 +23,13 @@ export default class MovieCards extends Component {
               </a>
             </Card.Title>
             <p>
-              Rating: {movie.vote_average}⭐ ({movie.vote_count} votes) <br />
+              Rating: {movie.vote_average}{" "}
+              <i
+                class="fa fa-star"
+                aria-hidden="true"
+                style={{ color: "yellow" }}
+              />{" "}
+              ({movie.vote_count} votes) <br />
               Popularity: {movie.popularity}
             </p>
             <Accordion>

@@ -6,9 +6,6 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  UncontrolledButtonDropdown
-} from "reactstrap";
-import {
   UncontrolledCollapse,
   FormGroup,
   Form,
@@ -112,7 +109,7 @@ class App extends React.Component {
       return (
         <div className="App">
           <Navbar
-            className="bg-success"
+            className="bg-danger"
             collapseOnSelect
             sticky="top"
             expand="lg"
@@ -205,7 +202,7 @@ class App extends React.Component {
           </Navbar>
           <Row>
             <Col lg={3} md={12} className="filter">
-              <h2 className="my-4">Filter</h2>
+              <h1 className="my-4 mx-0">Filter</h1>
               <FormGroup className="border-top border-light pt-2">
                 <Label for="inputGenre">
                   <h4>Genre</h4>
