@@ -18,16 +18,21 @@ export default class MovieCards extends Component {
             }}
           >
             <Card.Title>
-              <a href="#">
+              <a href="#" className="h4">
                 {movie.title} ({movie.release_date.slice(0, 4)})
               </a>
             </Card.Title>
-            <small className="font-italic">
+            <p>
               Rating: {movie.vote_average}⭐ ({movie.vote_count} votes) <br />
               Popularity: {movie.popularity}
-            </small>
+            </p>
             <Accordion>
-              <Accordion.Toggle as={Button} variant="link" eventKey="0">
+              <Accordion.Toggle
+                as={Button}
+                variant="link"
+                eventKey="0"
+                className="btn-neutral"
+              >
                 Overview
               </Accordion.Toggle>
               <Accordion.Collapse eventKey="0">
@@ -38,8 +43,12 @@ export default class MovieCards extends Component {
             </Accordion>
           </Card.Body>
           <Card.Body className="py-2">
-            <Button className="m-2"> Watch</Button>
-            <Button className="m-2 btn-secondary"> Trailer</Button>
+            <Button className="m-2 btn-round btn-success" size="sm">
+              Watch
+            </Button>
+            <Button className="m-2 btn-round btn-primary" size="sm">
+              Trailer
+            </Button>
           </Card.Body>
         </Card>
       );

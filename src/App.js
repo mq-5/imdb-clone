@@ -1,22 +1,45 @@
+/* eslint-disable jsx-a11y/accessible-emoji */
 import React from "react";
-import "./App.css";
 import {
   Button,
-  Row,
-  Col,
-  Container,
   Spinner,
-  Nav,
   NavDropdown,
-  Navbar,
   Pagination,
-  Form,
   FormControl
 } from "react-bootstrap";
+import {
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  UncontrolledButtonDropdown
+} from "reactstrap";
+import {
+  Collapse,
+  CardTitle,
+  UncontrolledCollapse,
+  FormGroup,
+  Form,
+  Label,
+  Input,
+  NavbarBrand,
+  Navbar,
+  NavItem,
+  NavLink,
+  Nav,
+  Row,
+  Col,
+  Container
+} from "reactstrap";
 import MovieCards from "./MovieCards";
 import Genres from "./Genres";
-import InputRange from "react-input-range";
-import "react-input-range/lib/css/index.css";
+// import InputRange from "react-input-range";
+import Slider from "./Slider";
+import "./assets/css/blk-design-system-react.css";
+// import "./assets/css/blk-design-system-react.min.css";
+// import "./assets/css/blk-design-system-react.css.map";
+import "./assets/css/nucleo-icons.css";
+import "./App.css";
 
 class App extends React.Component {
   constructor(props) {
@@ -48,12 +71,15 @@ class App extends React.Component {
     );
     const jsonData = await response.json();
     console.log("api", genre, jsonData);
-    this.setState({
-      movies: jsonData.results,
-      total_pages: jsonData.total_pages,
-      page: page,
-      isLoading: false
-    });
+    this.setState(
+      {
+        movies: jsonData.results,
+        total_pages: jsonData.total_pages,
+        page: page,
+        isLoading: false
+      },
+      () => this.searchMovies("")
+    );
   };
 
   componentDidMount() {
@@ -100,13 +126,96 @@ class App extends React.Component {
       return (
         <div className="App">
           <Navbar
+            className="bg-success"
             collapseOnSelect
             sticky="top"
             expand="lg"
-            bg="dark"
-            variant="dark"
           >
-            <Navbar.Brand href="#home">Home Cinema</Navbar.Brand>
+            <Container>
+              <button
+                className="navbar-toggler"
+                id="navbarTogglerDemo01"
+                type="button"
+              >
+                <span className="navbar-toggler-bar navbar-kebab" />
+                <span className="navbar-toggler-bar navbar-kebab" />
+                <span className="navbar-toggler-bar navbar-kebab" />
+              </button>
+              <UncontrolledCollapse navbar toggler="#navbarTogglerDemo01">
+                <NavbarBrand href="#pablo" onClick={e => e.preventDefault()}>
+                  Hidden brand
+                </NavbarBrand>
+                <Nav className="mr-auto mt-2 mt-lg-0" navbar>
+                  <UncontrolledDropdown nav>
+                    <DropdownToggle
+                      aria-expanded={false}
+                      aria-haspopup={true}
+                      caret
+                      color="default"
+                      data-toggle="dropdown"
+                      href="#pablo"
+                      id="navbarDropdownMenuLink"
+                      nav
+                      onClick={e => e.preventDefault()}
+                    >
+                      Sort By
+                    </DropdownToggle>
+                    <DropdownMenu aria-labelledby="navbarDropdownMenuLink">
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={() =>
+                          this.setState({ sortBy: "popularity.desc" }, () =>
+                            this.getMovies(this.state.page)
+                          )
+                        }
+                      >
+                        Popularity (Descending)
+                      </DropdownItem>
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={() =>
+                          this.setState({ sortBy: "popularity.asc" }, () =>
+                            this.getMovies(this.state.page)
+                          )
+                        }
+                      >
+                        Popularity (Ascending)
+                      </DropdownItem>
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={() =>
+                          this.setState({ sortBy: "vote_average.desc" }, () =>
+                            this.getMovies(this.state.page)
+                          )
+                        }
+                      >
+                        Rating (Descending)
+                      </DropdownItem>
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={() =>
+                          this.setState({ sortBy: "vote_average.asc" }, () =>
+                            this.getMovies(this.state.page)
+                          )
+                        }
+                      >
+                        Rating (Ascending)
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                </Nav>
+                <Form className="form-inline ml-auto">
+                  <FormGroup className="no-border">
+                    <Input
+                      placeholder="Search"
+                      type="text"
+                      onChange={e => this.searchMovies(e.target.value)}
+                    />
+                  </FormGroup>
+                </Form>
+              </UncontrolledCollapse>
+            </Container>
+            {/* <Navbar.Brand href="#home">Home Cinema</Navbar.Brand>
             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
             <Navbar.Collapse id="responsive-navbar-nav">
               <Nav className="mr-auto">
@@ -166,25 +275,29 @@ class App extends React.Component {
                   </Button>
                 </Form>
               </Nav>
-            </Navbar.Collapse>
+            </Navbar.Collapse> */}
           </Navbar>
           <Row>
             <Col lg={3} md={12} className="filter">
               <h3 className="my-4">Filter</h3>
-              <h5 className="mt-3"> Genres </h5>
-              <Form.Control
-                as="select"
-                onChange={e =>
-                  this.setState({ genre: e.target.value }, () =>
-                    this.getMovies(1)
-                  )
-                }
-              >
-                <option value="">All...</option>
-                <Genres />
-              </Form.Control>
-              <h5 className="mt-3"> Year </h5>
-              <InputRange
+              <FormGroup>
+                <Label for="inputGenre">Genre</Label>
+                <Input
+                  type="select"
+                  name="select"
+                  id="inputGenre"
+                  onChange={e =>
+                    this.setState({ genre: e.target.value }, () =>
+                      this.getMovies(1)
+                    )
+                  }
+                >
+                  <option value="">All</option>
+                  <Genres />
+                </Input>
+              </FormGroup>
+              <Slider />
+              {/* <InputRange
                 maxValue={2020}
                 minValue={1850}
                 value={this.state.year}
@@ -202,7 +315,7 @@ class App extends React.Component {
                     this.getMovies(this.state.page)
                   )
                 }
-              />
+              /> */}
             </Col>
             <Col lg={9} md={12}>
               <Container className="d-flex flex-wrap justify-content-center">
@@ -225,8 +338,8 @@ class App extends React.Component {
               onClick={() => this.getMovies(this.state.total_pages)}
             />
           </Pagination>
-          <footer>
-            <h5>Created with ❤️ by Quyen</h5>
+          <footer className="">
+            <h4>Created with ❤️ by Quyen</h4>
           </footer>
         </div>
       );
