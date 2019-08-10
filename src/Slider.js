@@ -4,43 +4,47 @@ import { CardTitle, Row, Col } from "reactstrap";
 import Slider from "D:/Learning/CoderSchool/imdb-clone/node_modules/nouislider";
 
 class Example extends React.Component {
-  onchange = () => {
-    Slider.noUiSlider.on("change.one", function() {
-      console.log(111111111111);
-    });
-  };
-  componentDidMount() {
-    var year = this.refs.year;
-    var rating = this.refs.rating;
-    Slider.create(year, {
-      start: [1850, 2020],
-      connect: [false, true, false],
-      step: 1,
-      range: { min: 1850, max: 2020 }
-    });
-    Slider.create(rating, {
-      start: [0, 10],
-      connect: [false, true, false],
-      step: 1,
-      range: { min: 0, max: 10 }
-    });
+  constructor(props) {
+    super(props);
+    this.state = {};
   }
+
+  componentDidMount() {
+    var item = document.getElementById(this.props.name);
+    let slider = Slider.create(item, {
+      start: [this.props.min, this.props.max],
+      connect: [false, true, false],
+      step: 1,
+      range: { min: this.props.min, max: this.props.max }
+    });
+    this.setState({ slider: slider });
+  }
+
   render() {
     return (
       <Row>
         <Col xs={12} md={12}>
-          <h4 className="title">Year</h4>
+          <h4 className="title">{this.props.name}</h4>
+          <p className="small">
+            From{" "}
+            {this.state.slider &&
+              this.state.slider
+                .get()
+                .map(value => value.slice(0, -3))
+                .join(" to ")}
+          </p>
           <div className="d-flex justify-content-around">
-            <small>1850</small>
-            <div className="slider slider-success" ref="year" />
-            <small>2020</small>
-          </div>
-          <br />
-          <h4 className="title">Rating</h4>
-          <div className="d-flex justify-content-around">
-            <small>0</small>
-            <div className="slider slider-success" ref="rating" />
-            <small>10</small>
+            <small>{this.props.min}</small>
+            <div
+              className="slider slider-info"
+              id={this.props.name}
+              onClickCapture={() => {
+                this.state.slider.on("change", (str, handler, values) => {
+                  this.props.setValue({ min: values[0], max: values[1] });
+                });
+              }}
+            />
+            <small>{this.props.max}</small>
           </div>
         </Col>
       </Row>

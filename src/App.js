@@ -1,12 +1,6 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 import React from "react";
-import {
-  Button,
-  Spinner,
-  NavDropdown,
-  Pagination,
-  FormControl
-} from "react-bootstrap";
+import { Spinner, Pagination } from "react-bootstrap";
 import {
   UncontrolledDropdown,
   DropdownToggle,
@@ -15,8 +9,6 @@ import {
   UncontrolledButtonDropdown
 } from "reactstrap";
 import {
-  Collapse,
-  CardTitle,
   UncontrolledCollapse,
   FormGroup,
   Form,
@@ -24,8 +16,6 @@ import {
   Input,
   NavbarBrand,
   Navbar,
-  NavItem,
-  NavLink,
   Nav,
   Row,
   Col,
@@ -36,11 +26,8 @@ import Genres from "./Genres";
 // import InputRange from "react-input-range";
 import Slider from "./Slider";
 import "./assets/css/blk-design-system-react.css";
-// import "./assets/css/blk-design-system-react.min.css";
-// import "./assets/css/blk-design-system-react.css.map";
 import "./assets/css/nucleo-icons.css";
 import "./App.css";
-
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -70,7 +57,6 @@ class App extends React.Component {
       }&with_genres=${genre}`
     );
     const jsonData = await response.json();
-    console.log("api", genre, jsonData);
     this.setState(
       {
         movies: jsonData.results,
@@ -115,7 +101,7 @@ class App extends React.Component {
   };
 
   render() {
-    console.log("state", this.state);
+    // console.log("state", this.state.rating);
     if (this.state.isLoading) {
       return (
         <div className="App-header">
@@ -215,67 +201,6 @@ class App extends React.Component {
                 </Form>
               </UncontrolledCollapse>
             </Container>
-            {/* <Navbar.Brand href="#home">Home Cinema</Navbar.Brand>
-            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-            <Navbar.Collapse id="responsive-navbar-nav">
-              <Nav className="mr-auto">
-                <NavDropdown title="Sort By" id="collasible-nav-dropdown">
-                  <NavDropdown.Item
-                    href="#action/3.2"
-                    onClick={() =>
-                      this.setState({ sortBy: "popularity.desc" }, () =>
-                        this.getMovies(this.state.page)
-                      )
-                    }
-                  >
-                    Popularity (Descending)
-                  </NavDropdown.Item>
-                  <NavDropdown.Item
-                    href="#action/3.1"
-                    onClick={() =>
-                      this.setState({ sortBy: "popularity.asc" }, () =>
-                        this.getMovies(this.state.page)
-                      )
-                    }
-                  >
-                    Popularity (Ascending)
-                  </NavDropdown.Item>
-                  <NavDropdown.Item
-                    href="#action/3.4"
-                    onClick={() =>
-                      this.setState({ sortBy: "vote_average.desc" }, () =>
-                        this.getMovies(this.state.page)
-                      )
-                    }
-                  >
-                    Rating (Descending)
-                  </NavDropdown.Item>
-                  <NavDropdown.Item
-                    href="#action/3.3"
-                    onClick={() =>
-                      this.setState({ sortBy: "vote_average.asc" }, () =>
-                        this.getMovies(this.state.page)
-                      )
-                    }
-                  >
-                    Rating (Ascending)
-                  </NavDropdown.Item>
-                </NavDropdown>
-              </Nav>
-              <Nav>
-                <Form inline>
-                  <FormControl
-                    type="text"
-                    onChange={e => this.searchMovies(e.target.value)}
-                    placeholder="Search"
-                    className="mr-sm-2"
-                  />
-                  <Button disable variant="outline-success">
-                    Search
-                  </Button>
-                </Form>
-              </Nav>
-            </Navbar.Collapse> */}
           </Navbar>
           <Row>
             <Col lg={3} md={12} className="filter">
@@ -296,26 +221,22 @@ class App extends React.Component {
                   <Genres />
                 </Input>
               </FormGroup>
-              <Slider />
-              {/* <InputRange
-                maxValue={2020}
-                minValue={1850}
-                value={this.state.year}
-                onChange={year =>
-                  this.setState({ year }, () => this.getMovies(this.state.page))
+              <Slider
+                min={1850}
+                max={2020}
+                name="Year"
+                setValue={newRange =>
+                  this.setState({ year: newRange }, () => this.getMovies(1))
                 }
               />
-              <h5 className="mt-3"> Rating </h5>
-              <InputRange
-                maxValue={10}
-                minValue={0}
-                value={this.state.rating}
-                onChange={rating =>
-                  this.setState({ rating }, () =>
-                    this.getMovies(this.state.page)
-                  )
+              <Slider
+                min={0}
+                max={10}
+                name="Rating"
+                setValue={newRange =>
+                  this.setState({ rating: newRange }, () => this.getMovies(1))
                 }
-              /> */}
+              />
             </Col>
             <Col lg={9} md={12}>
               <Container className="d-flex flex-wrap justify-content-center">
