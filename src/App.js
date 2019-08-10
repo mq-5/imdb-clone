@@ -194,6 +194,7 @@ class App extends React.Component {
                   <FormGroup className="no-border">
                     <Input
                       placeholder="Search"
+                      className=" border-info"
                       type="text"
                       onChange={e => this.searchMovies(e.target.value)}
                     />
@@ -204,9 +205,11 @@ class App extends React.Component {
           </Navbar>
           <Row>
             <Col lg={3} md={12} className="filter">
-              <h3 className="my-4">Filter</h3>
-              <FormGroup>
-                <Label for="inputGenre">Genre</Label>
+              <h2 className="my-4">Filter</h2>
+              <FormGroup className="border-top border-light pt-2">
+                <Label for="inputGenre">
+                  <h4>Genre</h4>
+                </Label>
                 <Input
                   type="select"
                   name="select"
