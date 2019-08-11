@@ -2,15 +2,20 @@
   text-align: center;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-  pointer-events: none;
+.App-header {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
-.navbar {
-  background-color: #16191fd8 !important;
+.card {
+  background-color: #32325d;
+  color: white;
+}
+
+.card a {
+  color: #17a2b8;
 }
 
 .pagination {
@@ -18,14 +23,12 @@
   display: flex;
   justify-content: center;
 }
-
 footer {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 5rem;
   color: white;
-  background-color: #282c34;
 }
 
 h1 {
@@ -33,20 +36,27 @@ h1 {
   margin: 30px;
 }
 
-select.form-control {
-  width: 70%;
+#inputGenre.form-control {
+  width: 100%;
+}
+option {
+  color: #212529;
 }
 
-.input-range {
+.slider {
   width: 70% !important;
-  margin: 2rem 0;
+  margin: auto;
 }
 .input-range__label-container {
   color: #29303fd8;
 }
 .filter {
-  color: #29303fd8;
-  background-color: rgba(115, 123, 131, 0.37);
+  color: #e9ecef;
   text-align: left;
-  padding-left: 50px;
+  padding-left: 3rem;
+}
+
+.col {
+  margin: 0;
+  padding: 0;
 }

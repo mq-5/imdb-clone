@@ -1,22 +1,31 @@
+/* eslint-disable jsx-a11y/accessible-emoji */
 import React from "react";
-import "./App.css";
+import { Spinner, Pagination } from "react-bootstrap";
 import {
-  Button,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  UncontrolledCollapse,
+  FormGroup,
+  Form,
+  Label,
+  Input,
+  NavbarBrand,
+  Navbar,
+  Nav,
   Row,
   Col,
-  Container,
-  Spinner,
-  Nav,
-  NavDropdown,
-  Navbar,
-  Pagination,
-  Form,
-  FormControl
-} from "react-bootstrap";
+  Container
+} from "reactstrap";
+
+import "./assets/css/blk-design-system-react.css";
+import "./assets/css/nucleo-icons.css";
+import "./App.css";
+
 import MovieCards from "./MovieCards";
 import Genres from "./Genres";
-import InputRange from "react-input-range";
-import "react-input-range/lib/css/index.css";
+import Slider from "./Slider";
 
 class App extends React.Component {
   constructor(props) {
@@ -36,9 +45,7 @@ class App extends React.Component {
     let sortBy = this.state.sortBy;
     let genre = this.state.genre || "";
     const response = await fetch(
-      `https://api.themoviedb.org/3/discover/movie?api_key=4c5b4a5e627748117d4b24082672a9b4&sort_by=${sortBy}&page=${
-        this.state.page
-      }&primary_release_date.gte=${
+      `https://api.themoviedb.org/3/discover/movie?api_key=4c5b4a5e627748117d4b24082672a9b4&sort_by=${sortBy}&page=${page}&primary_release_date.gte=${
         this.state.year.min
       }-1-1&primary_release_date.lte=${
         this.state.year.max
@@ -47,7 +54,6 @@ class App extends React.Component {
       }&with_genres=${genre}`
     );
     const jsonData = await response.json();
-    console.log("api", genre, jsonData);
     this.setState(
       {
         movies: jsonData.results,
@@ -65,7 +71,7 @@ class App extends React.Component {
 
   renderPagination() {
     let pages = [];
-    for (let i = 1; i <= this.state.total_pages; i++) {
+    for (let i = 1; i <= Math.min(this.state.total_pages, 1000); i++) {
       pages.push(i);
     }
     return pages.map(page => {
@@ -92,112 +98,146 @@ class App extends React.Component {
   };
 
   render() {
-    console.log("state", this.state);
     if (this.state.isLoading) {
       return (
         <div className="App-header">
-          <Spinner animation="border" variant="light" />
+          <Spinner
+            animation="border"
+            variant="light"
+            style={{ width: "3rem", height: "3rem" }}
+          />
         </div>
       );
     } else {
       return (
         <div className="App">
-          <Navbar collapseOnSelect sticky="top" expand="lg" variant="dark">
-            <Navbar.Brand href="#home">Home Cinema</Navbar.Brand>
-            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-            <Navbar.Collapse id="responsive-navbar-nav">
-              <Nav className="mr-auto">
-                <NavDropdown title="Sort By" id="collasible-nav-dropdown">
-                  <NavDropdown.Item
-                    href="#action/3.2"
-                    onClick={() =>
-                      this.setState({ sortBy: "popularity.desc" }, () =>
-                        this.getMovies(this.state.page)
-                      )
-                    }
-                  >
-                    Popularity (Descending)
-                  </NavDropdown.Item>
-                  <NavDropdown.Item
-                    href="#action/3.1"
-                    onClick={() =>
-                      this.setState({ sortBy: "popularity.asc" }, () =>
-                        this.getMovies(this.state.page)
-                      )
-                    }
-                  >
-                    Popularity (Ascending)
-                  </NavDropdown.Item>
-                  <NavDropdown.Item
-                    href="#action/3.4"
-                    onClick={() =>
-                      this.setState({ sortBy: "vote_average.desc" }, () =>
-                        this.getMovies(this.state.page)
-                      )
-                    }
-                  >
-                    Rating (Descending)
-                  </NavDropdown.Item>
-                  <NavDropdown.Item
-                    href="#action/3.3"
-                    onClick={() =>
-                      this.setState({ sortBy: "vote_average.asc" }, () =>
-                        this.getMovies(this.state.page)
-                      )
-                    }
-                  >
-                    Rating (Ascending)
-                  </NavDropdown.Item>
-                </NavDropdown>
-              </Nav>
-              <Nav>
-                <Form inline>
-                  <FormControl
-                    type="text"
-                    onChange={e => this.searchMovies(e.target.value)}
-                    placeholder="Search"
-                    className="mr-sm-2"
-                  />
-                  <Button disable variant="outline-success">
-                    Search
-                  </Button>
+          <Navbar
+            className="bg-success"
+            collapseOnSelect
+            sticky="top"
+            expand="lg"
+          >
+            <Container>
+              <button
+                className="navbar-toggler"
+                id="navbarTogglerDemo01"
+                type="button"
+              >
+                <span className="navbar-toggler-bar navbar-kebab" />
+                <span className="navbar-toggler-bar navbar-kebab" />
+                <span className="navbar-toggler-bar navbar-kebab" />
+              </button>
+              <UncontrolledCollapse navbar toggler="#navbarTogglerDemo01">
+                <NavbarBrand href="#pablo" onClick={e => e.preventDefault()}>
+                  Home Cine
+                </NavbarBrand>
+                <Nav className="mr-auto mt-2 mt-lg-0" navbar>
+                  <UncontrolledDropdown nav>
+                    <DropdownToggle
+                      aria-expanded={false}
+                      aria-haspopup={true}
+                      caret
+                      color="default"
+                      data-toggle="dropdown"
+                      href="#pablo"
+                      id="navbarDropdownMenuLink"
+                      nav
+                      onClick={e => e.preventDefault()}
+                    >
+                      Sort By
+                    </DropdownToggle>
+                    <DropdownMenu aria-labelledby="navbarDropdownMenuLink">
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={() =>
+                          this.setState({ sortBy: "popularity.desc" }, () =>
+                            this.getMovies(this.state.page)
+                          )
+                        }
+                      >
+                        Popularity (Descending)
+                      </DropdownItem>
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={() =>
+                          this.setState({ sortBy: "popularity.asc" }, () =>
+                            this.getMovies(this.state.page)
+                          )
+                        }
+                      >
+                        Popularity (Ascending)
+                      </DropdownItem>
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={() =>
+                          this.setState({ sortBy: "vote_average.desc" }, () =>
+                            this.getMovies(this.state.page)
+                          )
+                        }
+                      >
+                        Rating (Descending)
+                      </DropdownItem>
+                      <DropdownItem
+                        href="#pablo"
+                        onClick={() =>
+                          this.setState({ sortBy: "vote_average.asc" }, () =>
+                            this.getMovies(this.state.page)
+                          )
+                        }
+                      >
+                        Rating (Ascending)
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                </Nav>
+                <Form className="form-inline ml-auto">
+                  <FormGroup className="no-border">
+                    <Input
+                      placeholder="Search"
+                      className=" border-info"
+                      type="text"
+                      onChange={e => this.searchMovies(e.target.value)}
+                    />
+                  </FormGroup>
                 </Form>
-              </Nav>
-            </Navbar.Collapse>
+              </UncontrolledCollapse>
+            </Container>
           </Navbar>
           <Row>
             <Col lg={3} md={12} className="filter">
-              <h3 className="my-4">Filter</h3>
-              <h5 className="mt-3"> Genres </h5>
-              <Form.Control
-                as="select"
-                onChange={e =>
-                  this.setState({ genre: e.target.value }, () =>
-                    this.getMovies(1)
-                  )
-                }
-              >
-                <option value="">All...</option>
-                <Genres />
-              </Form.Control>
-              <h5 className="mt-3"> Year </h5>
-              <InputRange
-                maxValue={2020}
-                minValue={1850}
-                value={this.state.year}
-                onChange={year =>
-                  this.setState({ year }, () => this.getMovies(this.state.page))
+              <h1 className="my-4 mx-0">Filter</h1>
+              <FormGroup className="border-top border-light pt-2">
+                <Label for="inputGenre">
+                  <h4>Genre</h4>
+                </Label>
+                <Input
+                  type="select"
+                  name="select"
+                  id="inputGenre"
+                  onChange={e =>
+                    this.setState({ genre: e.target.value }, () =>
+                      this.getMovies(1)
+                    )
+                  }
+                >
+                  <option value="">All</option>
+                  <Genres />
+                </Input>
+              </FormGroup>
+              <Slider
+                min={1850}
+                max={2020}
+                name="Year"
+                setValue={newRange =>
+                  this.setState({ year: newRange }, () => this.getMovies(1))
                 }
               />
-              <h5 className="mt-3"> Rating </h5>
-              <InputRange
-                maxValue={10}
-                minValue={0}
-                value={this.state.rating}
-                onChange={rating =>
-                  this.setState({ rating }, () =>
-                    this.getMovies(this.state.page)
-                  )
+              <Slider
+                min={0}
+                max={10}
+                name="Rating"
+                setValue={newRange =>
+                  this.setState({ rating: newRange }, () => this.getMovies(1))
                 }
               />
             </Col>
@@ -215,15 +255,19 @@ class App extends React.Component {
             />
             {this.renderPagination()}
             <Pagination.Next
-              disabled={this.state.page === this.state.total_pages}
+              disabled={
+                this.state.page === Math.min(this.state.total_pages, 1000)
+              }
               onClick={() => this.getMovies(this.state.page + 1)}
             />
             <Pagination.Last
-              onClick={() => this.getMovies(this.state.total_pages)}
+              onClick={() =>
+                this.getMovies(Math.min(this.state.total_pages, 1000))
+              }
             />
           </Pagination>
-          <footer>
-            <h5>Created with ❤️ by Quyen</h5>
+          <footer className="">
+            <h4>Created with ❤️ by Quyen</h4>
           </footer>
         </div>
       );

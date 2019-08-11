@@ -1,4 +1,4 @@
-import { option } from "react-bootstrap";
+import { option } from "reactstrap";
 import React, { Component } from "react";
 
 export default class GenresList extends Component {
