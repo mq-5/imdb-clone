@@ -25,7 +25,7 @@ class Example extends React.Component {
       <Row>
         <Col xs={12} md={12}>
           <h4 className="title">{this.props.name}</h4>
-          <p className="small font-italic">
+          <p className="small font-italic text-center">
             From{" "}
             {this.state.slider &&
               this.state.slider

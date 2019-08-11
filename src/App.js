@@ -18,13 +18,15 @@ import {
   Col,
   Container
 } from "reactstrap";
-import MovieCards from "./MovieCards";
-import Genres from "./Genres";
-// import InputRange from "react-input-range";
-import Slider from "./Slider";
+
 import "./assets/css/blk-design-system-react.css";
 import "./assets/css/nucleo-icons.css";
 import "./App.css";
+
+import MovieCards from "./MovieCards";
+import Genres from "./Genres";
+import Slider from "./Slider";
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -43,9 +45,7 @@ class App extends React.Component {
     let sortBy = this.state.sortBy;
     let genre = this.state.genre || "";
     const response = await fetch(
-      `https://api.themoviedb.org/3/discover/movie?api_key=4c5b4a5e627748117d4b24082672a9b4&sort_by=${sortBy}&page=${
-        this.state.page
-      }&primary_release_date.gte=${
+      `https://api.themoviedb.org/3/discover/movie?api_key=4c5b4a5e627748117d4b24082672a9b4&sort_by=${sortBy}&page=${page}&primary_release_date.gte=${
         this.state.year.min
       }-1-1&primary_release_date.lte=${
         this.state.year.max
@@ -54,6 +54,7 @@ class App extends React.Component {
       }&with_genres=${genre}`
     );
     const jsonData = await response.json();
+    console.log("JSON", jsonData);
     this.setState(
       {
         movies: jsonData.results,
@@ -71,7 +72,7 @@ class App extends React.Component {
 
   renderPagination() {
     let pages = [];
-    for (let i = 1; i <= this.state.total_pages; i++) {
+    for (let i = 1; i <= Math.min(this.state.total_pages, 1000); i++) {
       pages.push(i);
     }
     return pages.map(page => {
@@ -102,14 +103,18 @@ class App extends React.Component {
     if (this.state.isLoading) {
       return (
         <div className="App-header">
-          <Spinner animation="border" variant="light" />
+          <Spinner
+            animation="border"
+            variant="light"
+            style={{ width: "3rem", height: "3rem" }}
+          />
         </div>
       );
     } else {
       return (
         <div className="App">
           <Navbar
-            className="bg-danger"
+            className="bg-success"
             collapseOnSelect
             sticky="top"
             expand="lg"
@@ -126,7 +131,7 @@ class App extends React.Component {
               </button>
               <UncontrolledCollapse navbar toggler="#navbarTogglerDemo01">
                 <NavbarBrand href="#pablo" onClick={e => e.preventDefault()}>
-                  Hidden brand
+                  Home Cine
                 </NavbarBrand>
                 <Nav className="mr-auto mt-2 mt-lg-0" navbar>
                   <UncontrolledDropdown nav>
@@ -252,11 +257,15 @@ class App extends React.Component {
             />
             {this.renderPagination()}
             <Pagination.Next
-              disabled={this.state.page === this.state.total_pages}
+              disabled={
+                this.state.page === Math.min(this.state.total_pages, 1000)
+              }
               onClick={() => this.getMovies(this.state.page + 1)}
             />
             <Pagination.Last
-              onClick={() => this.getMovies(this.state.total_pages)}
+              onClick={() =>
+                this.getMovies(Math.min(this.state.total_pages, 1000))
+              }
             />
           </Pagination>
           <footer className="">
