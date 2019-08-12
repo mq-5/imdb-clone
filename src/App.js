@@ -16,17 +16,23 @@ import {
   Nav,
   Row,
   Col,
-  Container
+  Container,
+  Modal,
+  ModalHeader,
+  ModalBody
 } from "reactstrap";
+
+import MovieCards from "./components/MovieCards";
+import Genres from "./components/Genres";
+import InputRange from "react-input-range";
+import "react-input-range/lib/css/index.css";
+import YouTube from "react-youtube";
 
 import "./assets/css/blk-design-system-react.css";
 import "./assets/css/nucleo-icons.css";
 import "./App.css";
 
-import MovieCards from "./MovieCards";
-import Genres from "./Genres";
-import Slider from "./Slider";
-
+// import Modal from "./components/Modal";
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -37,13 +43,15 @@ class App extends React.Component {
       sortBy: "popularity.desc",
       year: { min: 1850, max: 2020 },
       rating: { min: 0, max: 10 },
-      genre: null,
-      isLoading: true
+      genre: "",
+      isLoading: true,
+      modal: false,
+      trailerTitle: ""
     };
   }
   getMovies = async page => {
     let sortBy = this.state.sortBy;
-    let genre = this.state.genre || "";
+    let genre = this.state.genre;
     const response = await fetch(
       `https://api.themoviedb.org/3/discover/movie?api_key=4c5b4a5e627748117d4b24082672a9b4&sort_by=${sortBy}&page=${page}&primary_release_date.gte=${
         this.state.year.min
@@ -54,6 +62,7 @@ class App extends React.Component {
       }&with_genres=${genre}`
     );
     const jsonData = await response.json();
+    // console.log("data", jsonData);
     this.setState(
       {
         movies: jsonData.results,
@@ -68,6 +77,31 @@ class App extends React.Component {
   componentDidMount() {
     this.getMovies(1);
   }
+
+  getTrailerKey = async movieId => {
+    try {
+      const response = await fetch(
+        `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=4c5b4a5e627748117d4b24082672a9b4`
+      );
+      const jsonData = await response.json();
+      // console.log("Hello", jsonData.results[0].key);
+      this.setState({
+        id: jsonData.results[0].key,
+        modal: true,
+        trailerTitle: jsonData.results[0].name
+      });
+    } catch (TypeError) {
+      alert("Opps! Trailer for this movie is not available");
+    }
+  };
+
+  toggle = movieId => {
+    if (!this.state.modal) {
+      this.getTrailerKey(movieId);
+    } else {
+      this.setState({ modal: false });
+    }
+  };
 
   renderPagination() {
     let pages = [];
@@ -88,16 +122,30 @@ class App extends React.Component {
     });
   }
 
-  searchMovies = term => {
+  searchMovies = async term => {
+    const response = await fetch(
+      `https://api.themoviedb.org/3/search/movie?api_key=4c5b4a5e627748117d4b24082672a9b4&query=${term}&page=1`
+    );
+    const jsonData = await response.json();
     let filtered = this.state.movies.filter(
       movie =>
         movie.title.toLowerCase().includes(term.toLowerCase()) ||
         movie.overview.toLowerCase().includes(term.toLowerCase())
     );
-    this.setState({ filtered: filtered });
+    let result = jsonData.results || filtered;
+    this.setState({ filtered: result });
   };
 
   render() {
+    const opts = {
+      height: "420",
+      width: "700",
+      playerVars: {
+        // https://developers.google.com/youtube/player_parameters
+        autoplay: 1
+      }
+    };
+
     if (this.state.isLoading) {
       return (
         <div className="App-header">
@@ -111,6 +159,19 @@ class App extends React.Component {
     } else {
       return (
         <div className="App">
+          <Modal
+            size="lg"
+            isOpen={this.state.modal}
+            toggle={this.toggle}
+            className={this.props.className}
+          >
+            <ModalHeader toggle={this.toggle}>
+              {this.state.trailerTitle}
+            </ModalHeader>
+            <ModalBody className="text-center">
+              <YouTube videoId={this.state.id} opts={opts} />
+            </ModalBody>
+          </Modal>
           <Navbar
             className="bg-success"
             collapseOnSelect
@@ -149,6 +210,7 @@ class App extends React.Component {
                     <DropdownMenu aria-labelledby="navbarDropdownMenuLink">
                       <DropdownItem
                         href="#pablo"
+                        active={this.state.sortBy === "popularity.desc"}
                         onClick={() =>
                           this.setState({ sortBy: "popularity.desc" }, () =>
                             this.getMovies(this.state.page)
@@ -159,6 +221,7 @@ class App extends React.Component {
                       </DropdownItem>
                       <DropdownItem
                         href="#pablo"
+                        active={this.state.sortBy === "popularity.asc"}
                         onClick={() =>
                           this.setState({ sortBy: "popularity.asc" }, () =>
                             this.getMovies(this.state.page)
@@ -169,6 +232,7 @@ class App extends React.Component {
                       </DropdownItem>
                       <DropdownItem
                         href="#pablo"
+                        active={this.state.sortBy === "vote_average.desc"}
                         onClick={() =>
                           this.setState({ sortBy: "vote_average.desc" }, () =>
                             this.getMovies(this.state.page)
@@ -179,6 +243,7 @@ class App extends React.Component {
                       </DropdownItem>
                       <DropdownItem
                         href="#pablo"
+                        active={this.state.sortBy === "vote_average.asc"}
                         onClick={() =>
                           this.setState({ sortBy: "vote_average.asc" }, () =>
                             this.getMovies(this.state.page)
@@ -196,6 +261,7 @@ class App extends React.Component {
                       placeholder="Search"
                       className=" border-info"
                       type="text"
+                      id="searchField"
                       onChange={e => this.searchMovies(e.target.value)}
                     />
                   </FormGroup>
@@ -224,26 +290,35 @@ class App extends React.Component {
                   <Genres />
                 </Input>
               </FormGroup>
-              <Slider
-                min={1850}
-                max={2020}
-                name="Year"
-                setValue={newRange =>
-                  this.setState({ year: newRange }, () => this.getMovies(1))
-                }
-              />
-              <Slider
-                min={0}
-                max={10}
-                name="Rating"
-                setValue={newRange =>
-                  this.setState({ rating: newRange }, () => this.getMovies(1))
-                }
-              />
+              <div className="mt-3">
+                <h4>Year</h4>
+                <InputRange
+                  maxValue={2020}
+                  minValue={1850}
+                  value={this.state.year}
+                  onChange={year =>
+                    this.setState({ year }, () => this.getMovies(1))
+                  }
+                />
+              </div>
+              <div className="mt-3">
+                <h4>Rating</h4>
+                <InputRange
+                  maxValue={10}
+                  minValue={0}
+                  value={this.state.rating}
+                  onChange={rating =>
+                    this.setState({ rating }, () => this.getMovies(1))
+                  }
+                />
+              </div>
             </Col>
             <Col lg={9} md={12}>
               <Container className="d-flex flex-wrap justify-content-center">
-                <MovieCards filtered={this.state.filtered} />
+                <MovieCards
+                  filtered={this.state.filtered}
+                  toggle={this.toggle}
+                />
               </Container>
             </Col>
           </Row>

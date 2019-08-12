@@ -5,7 +5,7 @@ export default class MovieCards extends Component {
   render() {
     return this.props.filtered.map(movie => {
       return (
-        <Card style={{ width: "18rem", margin: 10 }}>
+        <Card style={{ width: "14rem", margin: 10 }}>
           <Card.Img
             variant="top"
             src={`https://image.tmdb.org/t/p/w500${movie.backdrop_path}`}
@@ -49,10 +49,14 @@ export default class MovieCards extends Component {
             </Accordion>
           </Card.Body>
           <Card.Body className="py-2">
-            <Button className="m-2 btn-round btn-success" size="sm">
+            <Button className="btn-round btn-success" size="sm">
               Watch
             </Button>
-            <Button className="m-2 btn-round btn-primary" size="sm">
+            <Button
+              className="m-2 btn-round btn-primary"
+              size="sm"
+              onClick={() => this.props.toggle(movie.id)}
+            >
               Trailer
             </Button>
           </Card.Body>

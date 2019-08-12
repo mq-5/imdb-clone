@@ -9,6 +9,10 @@
   height: 100vh;
 }
 
+.dropdown-menu .dropdown-item.active {
+  color: white;
+  font-weight: bold;
+}
 .card {
   background-color: #32325d;
   color: white;
@@ -38,18 +42,42 @@ h1 {
 
 #inputGenre.form-control {
   width: 100%;
+  background-color: #f6f9fc;
+  color: #212529;
+}
+
+#inputGenre.form-control:hover {
+  border-color: #17a2b8;
+  border-width: 2px;
 }
 option {
   color: #212529;
 }
 
-.slider {
-  width: 70% !important;
-  margin: auto;
+.input-range {
+  width: 90% !important;
+  margin: 2rem auto 4rem auto;
 }
-.input-range__label-container {
-  color: #29303fd8;
+
+.input-range__label {
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.8rem;
+  transform: translateZ(0);
+  white-space: nowrap;
 }
+
+.input-range__track {
+  background: #0a4a53;
+  height: 0.1rem;
+}
+
+.input-range__track--active {
+  background-color: #17a2b8;
+}
+.input-range__slider {
+}
+
 .filter {
   color: #e9ecef;
   text-align: left;

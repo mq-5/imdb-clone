@@ -21,6 +21,7 @@ class Example extends React.Component {
   }
 
   render() {
+    console.log("==============", this.state.slider && this.state.slider.get());
     return (
       <Row>
         <Col xs={12} md={12}>
@@ -36,7 +37,7 @@ class Example extends React.Component {
           <div className="d-flex justify-content-around">
             <small>{this.props.min}</small>
             <div
-              className="slider slider-info"
+              className="slider slider-primary"
               id={this.props.name}
               onClickCapture={() => {
                 this.state.slider.on("change", (str, handler, values) => {
